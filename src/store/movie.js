@@ -23,12 +23,12 @@ export async function searchMovies(payload) {
   const { number } = payload;
 
   try {
-    const res = await axios.post("/.netlify/functons/movie", {
+    const res = await axios.post("/.netlify/functions/movie", {
       ...payload,
       page: 1,
     });
+    const { Search, totalResults } = res;
 
-    const { Search, totalResults } = response;
     total = totalResults;
     movies.set(Search);
   } catch (msg) {
@@ -43,11 +43,12 @@ export async function searchMovies(payload) {
   if (pageLength > 1) {
     for (let page = 2; page <= pageLength; page++) {
       if (page > number / 10) break;
-      const res = await axios.post("/.netlify/functons/movie", {
+      const res = await axios.post("/.netlify/functions/movie", {
         ...payload,
         page,
       });
-      const { Search } = res.data;
+      const { Search } = res;
+      console.log(res);
       movies.update(($movies) => _unionBy($movies, Search, "imdbID"));
     }
   }
@@ -59,7 +60,7 @@ export async function searchMovieWithId(id) {
   if (get(loading)) return;
   loading.set(true);
 
-  const response = await axios.post("/.netlify/functons/movie", { id });
+  const response = await axios.post("/.netlify/functions/movie", { id });
 
   theMovie.set(response);
   loading.set(false);
